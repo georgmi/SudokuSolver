@@ -1,0 +1,9 @@
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\SudokuTester.dll
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\SudokuTester.pdb
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\nunit.framework.dll
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\SudokuSolver.exe
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\SudokuSolver.pdb
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\bin\Debug\nunit.framework.xml
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\obj\Debug\SudokuTester.csprojResolveAssemblyReference.cache
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\obj\Debug\SudokuTester.dll
+C:\Users\george\Documents\GitHub\SudokuSolver\SudokuTester\obj\Debug\SudokuTester.pdb
