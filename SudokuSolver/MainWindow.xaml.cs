@@ -43,6 +43,7 @@ namespace SudokuSolver
                     tbMatrix[row, column].TextAlignment = TextAlignment.Center;
                     tbMatrix[row, column].Text = "";
                     tbMatrix[row, column].FontWeight = FontWeights.Bold;
+                    tbMatrix[row, column].AddHandler(TextBox.TextChangedEvent, new RoutedEventHandler(tb_Changed));
                 }
             }
         }
@@ -50,6 +51,19 @@ namespace SudokuSolver
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void tb_Changed(object sender, RoutedEventArgs e)
+        {
+            LoadPuzzleFromUI();
+            if (CheckPuzzleForValidity())
+            {
+                lblStatusMessage.Content = "No conflicts found.";
+            }
+            else
+            {
+                lblStatusMessage.Content = "Please fix indicated conflicts.";
+            }
         }
 
         private void btnValidate_Click(object sender, RoutedEventArgs e)
@@ -67,6 +81,7 @@ namespace SudokuSolver
 
         private void btnSolve_Click(object sender, RoutedEventArgs e)
         {
+            ClearTextChangedHandler();
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -96,6 +111,7 @@ namespace SudokuSolver
             {
                 lblStatusMessage.Content = "Please fix indicated conflicts.";
             }
+            SetTextChangedHandler();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -275,6 +291,28 @@ namespace SudokuSolver
             }
 
             return CheckPuzzleForValidity();
+        }
+
+        private void SetTextChangedHandler()
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int column = 0; column < 9; column++)
+                {
+                    tbMatrix[row, column].AddHandler(TextBox.TextChangedEvent, new RoutedEventHandler(tb_Changed));
+                }
+            }
+        }
+
+        private void ClearTextChangedHandler()
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int column = 0; column < 9; column++)
+                {
+                    tbMatrix[row, column].RemoveHandler(TextBox.TextChangedEvent, new RoutedEventHandler(tb_Changed));
+                }
+            }
         }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
