@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace SudokuSolver
 {
@@ -89,26 +90,30 @@ namespace SudokuSolver
             lblStatusMessage.Content = "";
             if (CheckPuzzleForValidity())
             {
-                foreach(SudokuCell cell in puzzleBoard)
+                //begin code segment for new thread
                 {
-                    if(cell.Value != 0)
+                    foreach (SudokuCell cell in puzzleBoard)
                     {
-                        cell.PossValues.Clear();
+                        if (cell.Value != 0)
+                        {
+                            cell.PossValues.Clear();
+                        }
                     }
-                }
-                if(SolvePuzzle())
-                {
-                    stopwatch.Stop();
-                    lblStatusMessage.Content = "Puzzle solved in " + stopwatch.Elapsed.TotalSeconds.ToString() + "sec.";
-                }
-                else
-                {
-                    stopwatch.Stop();
-                    lblStatusMessage.Content = "Puzzle cannot be solved. Elapsed time " + stopwatch.Elapsed.TotalSeconds.ToString() + "sec.";
-                }
+                    if (SolvePuzzle())
+                    {
+                        stopwatch.Stop();
+                        lblStatusMessage.Content = "Puzzle solved. Elapsed time " + stopwatch.Elapsed.TotalSeconds.ToString() + "sec.";
+                    }
+                    else
+                    {
+                        stopwatch.Stop();
+                        lblStatusMessage.Content = "Puzzle cannot be solved. Elapsed time " + stopwatch.Elapsed.TotalSeconds.ToString() + "sec.";
+                    }
+                } //end code segment for new thread.
             }
             else
             {
+                stopwatch.Stop();
                 lblStatusMessage.Content = "Please fix indicated conflicts.";
             }
             SetTextChangedHandler();
@@ -172,6 +177,7 @@ namespace SudokuSolver
                 if(!cell.Validate(puzzleBoard))
                 {
                     tbMatrix[cell.Row, cell.Column].Background = Brushes.Red;
+                    Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle, null);
                     valid = false;
                 }
             }
@@ -191,6 +197,7 @@ namespace SudokuSolver
                 }
             }
             solved = iterativeSolve(tbMatrix, unsolvedCells);
+            //solved = RecursiveSolve(tbMatrix, unsolvedCells);
             return solved;
         }
 
@@ -229,6 +236,9 @@ namespace SudokuSolver
                 if(inputList[iterator].PossValues.Count == 0)
                 {
                     inputList[iterator].Reset();
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Text = "";
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Background = Brushes.White;
+                    Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle, null);
                 }
                 foreach (int tryValue in inputList[iterator].PossValues)
                 {
@@ -236,6 +246,8 @@ namespace SudokuSolver
                     if (CheckPuzzleForValidity())
                     {
                         textBoxes[inputList[iterator].Row, inputList[iterator].Column].Text = inputList[iterator].Value.ToString();
+                        tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Background = Brushes.White;
+                        Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle, null);
                         iterator++;
                         break;
                     }
@@ -243,6 +255,8 @@ namespace SudokuSolver
                 if (!CheckPuzzleForValidity())
                 {
                     inputList[iterator].Reset();
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Text = "";
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Background = Brushes.White;
                     iterator--;
                     if(iterator < 0)
                     {
@@ -250,13 +264,16 @@ namespace SudokuSolver
                     }
                     inputList[iterator].PossValues.Remove(inputList[iterator].Value);
                     inputList[iterator].Value = 0;
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Text = "";
+                    tbMatrix[inputList[iterator].Row, inputList[iterator].Column].Background = Brushes.White;
+                    Dispatcher.Invoke(new Action(() => { }), DispatcherPriority.ContextIdle, null);
                 }
             }
 
             return CheckPuzzleForValidity();
         }
 
-        private bool TestSolve(TextBox[,] textBoxes, List<SudokuCell> inputList)
+        private bool RecursiveSolve(TextBox[,] textBoxes, List<SudokuCell> inputList)
         {
             if (inputList.Count == 0)
             {
